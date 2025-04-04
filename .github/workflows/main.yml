@@ -1,6 +1,6 @@
-name: Build Android APK  # 👈 Line 1 (must start with 'name')
+name: Build Android APK
 
-on: [push]  # 👈 Line 3 (simplified trigger syntax)
+on: [push]
 
 jobs:
   build:
@@ -16,5 +16,15 @@ jobs:
         distribution: 'temurin'
         cache: 'gradle'
 
-    - name: Build APK
-      run: ./gradlew assembleDebug
+    - name: Make gradlew executable  # 🔥 Critical fix
+      run: chmod +x ./gradlew
+
+    - name: Build APK with Gradle
+      run: ./gradlew assembleDebug --stacktrace
+
+    - name: Upload APK
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-debug-apk
+        path: app/build/outputs/apk/debug/app-debug.apk
