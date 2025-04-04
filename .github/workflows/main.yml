@@ -24,7 +24,7 @@ jobs:
 
     - name: Upload APK
       if: success()
-      uses: actions/upload-artifact@v3  # Correctly referenced
+      uses: actions/upload-artifact@v4  # Correctly referenced
       with:
         name: app-debug-apk
         path: app/build/outputs/apk/debug/app-debug.apk
