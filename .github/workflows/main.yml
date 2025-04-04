@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4  # Proper versioned checkout
+    - uses: actions/checkout@v4
 
     - name: Set up JDK 17
       uses: actions/setup-java@v3
@@ -16,15 +16,24 @@ jobs:
         distribution: 'temurin'
         cache: 'gradle'
 
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+
     - name: Make gradlew executable
       run: chmod +x ./gradlew
 
-    - name: Build APK with Gradle
-      run: ./gradlew assembleDebug --stacktrace
+    - name: Build with Gradle
+      run: |
+        ./gradlew clean
+        ./gradlew assembleDebug --stacktrace --info --scan
+
+    - name: Verify APK exists
+      run: |
+        ls -la app/build/outputs/apk/debug/
+        test -f app/build/outputs/apk/debug/app-debug.apk || exit 1
 
     - name: Upload APK
-      if: success()
-      uses: actions/upload-artifact@v4  # Correctly referenced
+      uses: actions/upload-artifact@v4
       with:
         name: app-debug-apk
         path: app/build/outputs/apk/debug/app-debug.apk
